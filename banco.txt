@@ -1,0 +1,14 @@
+CREATE DATABASE aula;
+
+use aula;
+
+create table veiculos(
+id int not null auto_increment primary key,
+marca varchar(60),
+modelo varchar(60),
+ano int,
+prop varchar(60),
+cor varchar(15)
+);
+drop table veiculos;
+select * from veiculos
