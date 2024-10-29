@@ -1,0 +1,107 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+export default function PageContent() {
+  const [id, setId] = useState(''); // Adicionando o estado para o ID
+  const [marca, setMarca] = useState('');
+  const [modelo, setModelo] = useState('');
+  const [ano, setAno] = useState('');
+  const [prop, setProp] = useState('');
+  const [cor, setCor] = useState('');
+
+  useEffect(() => {
+    console.log(marca, modelo, ano, prop, cor);
+  }, [marca, modelo, ano, prop, cor]);
+
+  async function registerVeiculo() {
+    await axios.post("http://localhost:3000/add", { marca, modelo, ano, prop, cor });
+  }
+
+  async function atualizarVeiculo() {
+    if (!id) {
+      console.error("Atualização mal sucedida: ID não fornecido.");
+      return;
+    }
+    await axios.put(`http://localhost:3000/upt/${id}`, { marca, modelo, ano, cor, prop });
+  }
+
+  async function deletarVeiculo() {
+    if (!id) {
+      console.error("Falha ao deletar: ID não fornecido.");
+      return;
+    }
+    await axios.delete(`http://localhost:3000/re/${id}`);
+  }
+
+  async function selecionarVeiculo() {
+    if (!id) {
+      console.error("Falha ao selecionar: ID não fornecido.");
+      return;
+    }
+    try {
+      const response = await axios.get(`http://localhost:3000/visu/${id}`);
+      const veiculo = response.data;
+      setMarca(veiculo.marca);
+      setModelo(veiculo.modelo);
+      setAno(veiculo.ano);
+      setProp(veiculo.prop);
+      setCor(veiculo.cor);
+    } catch (error) {
+      console.error("Erro ao buscar veículo:", error);
+    }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    registerVeiculo();
+  }
+
+  function handleUpdateSubmit(e) {
+    e.preventDefault();
+    atualizarVeiculo();
+  }
+
+  function handleDeleteSubmit(e) {
+    e.preventDefault();
+    deletarVeiculo();
+  }
+
+  function handleSelectSubmit(e) {
+    e.preventDefault();
+    selecionarVeiculo();
+  }
+
+  return (
+    <>
+      <div className="card">
+        <form>
+          <label htmlFor="id">ID</label>
+          <input type="text" id="id" onChange={(e) => setId(e.target.value)} />
+          <br />
+          <label htmlFor="marca">Marca</label>
+          <input type="text" id="marca" value={marca} onChange={(e) => setMarca(e.target.value)} />
+          <br />
+          <label htmlFor="modelo">Modelo</label>
+          <input type="text" id="modelo" value={modelo} onChange={(e) => setModelo(e.target.value)} />
+          <br />
+          <label htmlFor="ano">Ano</label>
+          <input type="text" id="ano" value={ano} onChange={(e) => setAno(e.target.value)} />
+          <br />
+          <label htmlFor="prop">Proprietário</label>
+          <input type="text" id="prop" value={prop} onChange={(e) => setProp(e.target.value)} />
+          <br />
+          <label htmlFor="cor">Cor</label>
+          <input type="text" id="cor" value={cor} onChange={(e) => setCor(e.target.value)} />
+          <br />
+          <button type="submit" onClick={handleSubmit}>Enviar carro</button>
+          <br />
+          <button type="submit" onClick={handleUpdateSubmit}>Atualizar veículo</button>
+          <br />
+          <button type="submit" onClick={handleDeleteSubmit}>Deletar veículo</button>
+          <br />
+          <button type="submit" onClick={handleSelectSubmit}>Selecionar veículo</button>
+        </form>
+      </div>
+    </>
+  );
+}
